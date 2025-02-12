@@ -1,0 +1,37 @@
+name: Validate md file front matter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install jq
+
+      - name: Validate JSON Front Matter
+        run: |
+          for file in $(find ./blog -name '*.md'); do
+            echo "Validating $file"
+            FRONTMATTER=$(sed -n '/^{/,/^}/p' "$file")
+            echo "$FRONTMATTER" | jq '.' > /dev/null
+            if [ $? -ne 0 ]; then
+              echo "Invalid JSON in $file"
+              exit 1
+            fi
+            REQUIRED_KEYS=("title" "excerpt" "creation_date")
+            for key in "${REQUIRED_KEYS[@]}"; do
+              echo "$FRONTMATTER" | jq -e "has(\"$key\")" > /dev/null
+              if [ $? -ne 0 ]; then
+                echo "Missing key '$key' in $file"
+                exit 1
+              fi
+            done
+          done
