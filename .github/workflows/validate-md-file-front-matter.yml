@@ -18,11 +18,13 @@ jobs:
 
       - name: Validate JSON Front Matter
         run: |
+          set +e
           ERRORS=""
           for file in $(find ./blog -name '*.md'); do
             echo "Validating $file"
             FRONTMATTER=$(sed -n '/^{/,/^}/p' "$file")
-            echo "$FRONTMATTER" | jq '.' > /dev/null
+            # Suppress jq error messages to prevent script from exiting
+            echo "$FRONTMATTER" | jq '.' > /dev/null 2>&1
             if [ $? -ne 0 ]; then
               echo "Invalid JSON in $file"
               ERRORS="$ERRORS\nInvalid JSON in $file"
@@ -30,7 +32,7 @@ jobs:
             fi
             REQUIRED_KEYS=("title" "excerpt" "creation_date")
             for key in "${REQUIRED_KEYS[@]}"; do
-              echo "$FRONTMATTER" | jq -e "has(\"$key\")" > /dev/null
+              echo "$FRONTMATTER" | jq -e "has(\"$key\")" > /dev/null 2>&1
               if [ $? -ne 0 ]; then
                 echo "Missing key '$key' in $file"
                 ERRORS="$ERRORS\nMissing key '$key' in $file"
