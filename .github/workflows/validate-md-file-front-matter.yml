@@ -30,16 +30,32 @@ jobs:
               ERRORS="$ERRORS\nInvalid JSON in $file"
               continue
             fi
-            REQUIRED_KEYS=("title" "excerpt" "creation_date")
+            REQUIRED_KEYS=("title" "excerpt" "creation_date" "postHashTags" "author")
             for key in "${REQUIRED_KEYS[@]}"; do
               echo "$FRONTMATTER" | jq -e "has(\"$key\")" > /dev/null 2>&1
               if [ $? -ne 0 ]; then
                 echo "Missing key '$key' in $file"
                 ERRORS="$ERRORS\nMissing key '$key' in $file"
+                continue  # Skip further checks for this key
+            fi
+            # Additional checks for specific keys
+            if [ "$key" == "creation_date" ]; then
+              # Attempt to parse the date
+              PARSED_DATE=$(date -d "$VALUE" "+%Y-%m-%dT%H:%M:%S" 2>/dev/null)
+              if [ "$PARSED_DATE" != "$VALUE" ]; then
+                echo "Invalid creation_date format in $file. Expected format: Y-m-d\TH:i:s"
+                ERRORS="$ERRORS\nInvalid creation_date format in $file"
               fi
+            fi
+            if [ "$key" == "postHashTags" ]; then
+              if ! echo "$FRONTMATTER" | jq -e ".${key} | arrays" > /dev/null; then
+                echo "postHashTags is not a valid array in $file"
+                ERRORS="$ERRORS\npostHashTags is not a valid array in $file"
+              fi
+            fi
             done
-          done
-          if [ -n "$ERRORS" ]; then
-            echo -e "Errors found: $ERRORS"
-            exit 1
-          fi
+            done
+            if [ -n "$ERRORS" ]; then
+              echo -e "Errors found: $ERRORS"
+              exit 1
+            fi
