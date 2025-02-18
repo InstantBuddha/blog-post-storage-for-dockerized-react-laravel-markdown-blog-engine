@@ -5,6 +5,7 @@ This is the repository to organize and inspect .md blog posts automatically usin
 - [blog-post-storage-for-dockerized-react-laravel-markdown-blog-engine](#blog-post-storage-for-dockerized-react-laravel-markdown-blog-engine)
   - [Structure](#structure)
   - [Blog Post file structure](#blog-post-file-structure)
+  - [Running test-workflows locally in Docker](#running-test-workflows-locally-in-docker)
 
 
 ## Structure
@@ -14,3 +15,11 @@ Each individual blog post is stored in a separate .md file. These files are stor
 ## Blog Post file structure
 
 Each file needs to have front matter in JSON format with blog post metadata such as creation date or title. CI/CD checks front matter validity.
+
+## Running test-workflows locally in Docker
+
+The file validate-md-file-front-matter.sh in ./local-test-workflows/ is a duplicate of the github workflow, so tests can be run locally with Docker by:
+
+```bash
+docker compose up --build
+```

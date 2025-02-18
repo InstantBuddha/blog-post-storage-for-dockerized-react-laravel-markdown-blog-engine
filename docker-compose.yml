@@ -1,0 +1,6 @@
+services:
+  validate:
+    build: .
+    container_name: simulate-github-workflow
+    volumes:
+      - ./blog:/app/blog
