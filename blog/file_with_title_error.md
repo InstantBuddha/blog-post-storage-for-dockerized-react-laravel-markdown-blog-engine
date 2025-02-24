@@ -1,11 +1,11 @@
 {
-    "title": "File with error",
-    "excerpt": "File with date error.",
+    "title": "",
+    "excerpt": "File with title error.",
     "cover_image": "http://localhost/images/NightSky.jpeg",
     "postHashTags": ["#stargazing", "#night", "#calm"],
     "author": "David Lee",
     "slug": "starry-nights",
-    "creation_date": "2024"
+    "creation_date": "2023-11-28T09:00:00"
 }
 
 # File with error
