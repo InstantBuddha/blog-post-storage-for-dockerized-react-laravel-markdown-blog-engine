@@ -17,4 +17,4 @@ jobs:
           sudo apt-get install jq
 
       - name: Validate JSON Front Matter
-        run: ./scripts/validate_front_matter.sh
+        run: ./scripts/validate-md-file-front-matter.sh
